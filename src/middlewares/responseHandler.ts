@@ -64,9 +64,9 @@ export const responseHandler = (req: Request, res: Response, next: NextFunction)
       message = error.message || 'Application Error';
     }
     // Log stack trace if in development mode
-    // if (process.env.NODE_ENV === 'development') {
-    //   console.error('Error Stack:', error.stack);
-    // }
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Error Stack:', error.stack);
+    }
 
 
     const response: ApiResponse = {

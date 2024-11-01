@@ -33,5 +33,4 @@ prisma/migrations/
 .idea/
 
 # Miscellaneous
-*.env.*
 *.sqlite*
