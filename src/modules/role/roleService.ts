@@ -6,9 +6,12 @@ const roleService = (prisma: PrismaClient) => ({
     },
 
     addRole: async (roleData: Partial<Role>): Promise<Role> => {
-        const { name } = roleData;
+        const { name = "", tenantId = "" } = roleData;
         return await prisma.role.create({
-            data: { name: name as string },
+            data: {
+                name,
+                tenantId
+            },
         });
     },
 
@@ -19,10 +22,10 @@ const roleService = (prisma: PrismaClient) => ({
     },
 
     updateRole: async (id: string, roleData: Partial<Role>): Promise<Role> => {
-        const { name } = roleData;
+        const { name = "" } = roleData;
         const data = await prisma.role.update({
             where: { id },
-            data: { name: name as string },
+            data: { name },
         });
         return data;
     },
