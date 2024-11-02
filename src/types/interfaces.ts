@@ -1,3 +1,5 @@
-export interface ObjectType {
-    [key: string]: any;
-  }
+export interface queryParams{
+  page?: number;
+  pageSize?: number;
+  search?: string;
+}

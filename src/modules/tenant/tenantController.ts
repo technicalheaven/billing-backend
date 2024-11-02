@@ -5,7 +5,7 @@ import { PrismaClient } from '@prisma/client';
 const tenantController = (prisma: PrismaClient) => ({
     getTenants: async (req: Request, res: Response) => {
         try {
-            const result = await tenantService(prisma).getTenants();
+            const result = await tenantService(prisma).getTenants(req.query);
             res.success(result)
         } catch (error) {
             res.error(error)

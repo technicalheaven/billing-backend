@@ -1,8 +1,16 @@
 import { PrismaClient, Tenant } from '@prisma/client';
+import { queryParams } from '../../types/interfaces';
+import { paginateAndFilter } from '../../libs/pagination/paginationFilter';
 
 const tenantService = (prisma: PrismaClient) => ({
-    getTenants: async (): Promise<Tenant[]> => {
-        return await prisma.tenant.findMany();
+    getTenants: async (query:queryParams) => {
+        const {page, pageSize, search } = query;
+        return paginateAndFilter<Tenant>(prisma.tenant, {
+            page,
+            pageSize,
+            search,
+            filterFields: ['name'],
+        });
     },
 
     addTenant: async (tenantData: Partial<Tenant>): Promise<Tenant> => {

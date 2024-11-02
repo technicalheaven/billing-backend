@@ -5,7 +5,7 @@ import { PrismaClient } from '@prisma/client';
 const roleController = (prisma: PrismaClient) => ({
     getRoles: async (req: Request, res: Response) => {
         try {
-            const result = await roleService(prisma).getRoles();
+            const result = await roleService(prisma).getRoles(req.query);
             res.success(result)
         } catch (error) {
             res.error(error);

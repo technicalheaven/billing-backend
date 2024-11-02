@@ -1,8 +1,17 @@
 import { PrismaClient, Role } from '@prisma/client';
+import { paginateAndFilter } from '../../libs/pagination/paginationFilter';
+import { queryParams } from '../../types/interfaces';
+
 
 const roleService = (prisma: PrismaClient) => ({
-    getRoles: async (): Promise<Role[]> => {
-        return await prisma.role.findMany();
+    getRoles: async (query:queryParams) => {
+        const {page, pageSize, search } = query;
+        return paginateAndFilter<Role>(prisma.role, {
+            page,
+            pageSize,
+            search,
+            filterFields: ['name'],
+        });
     },
 
     addRole: async (roleData: Partial<Role>): Promise<Role> => {
