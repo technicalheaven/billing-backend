@@ -20,11 +20,13 @@ declare global {
 export class AppError extends Error {
   public readonly statusCode: number;
   public readonly isOperational: boolean;
+  public readonly data: any;
 
-  constructor(message: string, statusCode = 500, isOperational = true) {
+  constructor(message: string, statusCode = 500, data:any = null, isOperational = true) {
     super(message);
     this.statusCode = statusCode;
     this.isOperational = isOperational;
+    this.data = data;
     Error.captureStackTrace(this, this.constructor);
   }
 }
@@ -64,9 +66,9 @@ export const responseHandler = (req: Request, res: Response, next: NextFunction)
       message = error.message || 'Application Error';
     }
     // Log stack trace if in development mode
-    if (process.env.NODE_ENV === 'development') {
-      console.error('Error Stack:', error.stack);
-    }
+    // if (process.env.NODE_ENV === 'development') {
+    //   console.error('Error Stack:', error.stack);
+    // }
 
 
     const response: ApiResponse = {
