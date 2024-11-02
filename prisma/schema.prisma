@@ -13,20 +13,30 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Tenant {
+  id         String     @id @default(uuid())
+  name       String
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  roles      Role[]
+  users      User[]
+  categories Category[]
+  products   Product[]
+  orders     Order[]
+
+  @@map("tenants")
+}
+
 model Role {
   id        String   @id @default(uuid())
   name      String
+  tenantId  String // Foreign key for Tenant
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  @@map("roles")
-}
+  tenant    Tenant   @relation(fields: [tenantId], references: [id]) // Relation to Tenant
+  users     User[]
 
-model Tenant {
-  id        String   @id @default(uuid())
-  name      String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  @@map("tenants")
+  @@map("roles")
 }
 
 model User {
@@ -38,16 +48,25 @@ model User {
   phone        String
   passwordHash String
   jwtToken     String?
+  tenantId     String // Foreign key for Tenant
+  roleId       String // Foreign key for Role
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+  tenant       Tenant   @relation(fields: [tenantId], references: [id]) // Relation to Tenant
+  role         Role     @relation(fields: [roleId], references: [id]) // Relation to Role
+
   @@map("users")
 }
 
 model Category {
-  id        String   @id @default(uuid())
+  id        String    @id @default(uuid())
   name      String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  tenantId  String // Foreign key for Tenant
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  tenant    Tenant    @relation(fields: [tenantId], references: [id]) // Relation to Tenant
+  products  Product[]
+
   @@map("categories")
 }
 
@@ -57,21 +76,27 @@ model Product {
   productCode String
   quantity    Int
   price       Decimal
+  categoryId  String // Foreign key for Category
+  tenantId    String // Foreign key for Tenant
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  category    Category @relation(fields: [categoryId], references: [id]) // Define relation to Category
+  tenant      Tenant   @relation(fields: [tenantId], references: [id]) // Relation to Tenant
+
   @@map("products")
 }
 
 model Order {
-  id        String   @id @default(uuid())
-  subTotal  Decimal
-  tax       Decimal
-  total     Decimal
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // One-to-many relationship with OrderProduct
+  id            String         @id @default(uuid())
+  subTotal      Decimal
+  tax           Decimal
+  total         Decimal
+  tenantId      String // Foreign key for Tenant
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  tenant        Tenant         @relation(fields: [tenantId], references: [id]) // Relation to Tenant
   orderProducts OrderProduct[]
+
   @@map("orders")
 }
 
@@ -81,11 +106,10 @@ model OrderProduct {
   quantity  Int
   price     Decimal
   tax       Decimal
+  orderId   String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  order     Order    @relation(fields: [orderId], references: [id])
 
-  // Foreign key referencing Order
-  orderId String
-  order   Order  @relation(fields: [orderId], references: [id])
   @@map("order_products")
 }
